@@ -3,3 +3,4 @@ line 1i
 added line 2
 
 adding first line after commiting
+adding first line after 2nd commit
