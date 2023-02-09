@@ -1,0 +1,3 @@
+hello
+line 1i
+added line 2
