@@ -10,6 +10,8 @@ PetscRandom rann;
 Vec a[n];
 PetscBool flg;
 PetscInt i;
+PetscReal dot_prod,normV;
+
 
 
 PetscInitialize(&argc, &args, NULL, help);
@@ -44,7 +46,15 @@ for (i=0; i<m; i++)
 PetscCall(VecView(a[0], PETSC_VIEWER_STDOUT_WORLD));
 PetscPrintf(comm,"\n");
 
-
+//a_i * b_j = delta_{ij}
+for (i=0; i<k; i++) {
+    for (j=0; j<i; j++) {
+        PetscCall( VecDot(a[i],a[j],&dot_prod) );
+        PetscCall( VecAXPY(a[i],-dot_prod,a[j])  );
+    }
+    PetscCall( VecNorm(a[i],NORM_2,&normV) );
+    PetscCall( VecScale(a[i],1.0/normV) );
+}
 //Print all Vector in loop
 // for (i=0; i<n ;i++ ){
 // PetscPrintf(comm, "%.2g  ",a[i]);
