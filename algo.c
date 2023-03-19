@@ -11,8 +11,7 @@ Vec a[n];
 PetscBool flg;
 PetscInt i;
 PetscReal dot_prod,normV;
-
-
+Mat A;
 
 PetscInitialize(&argc, &args, NULL, help);
 MPI_Comm comm = PETSC_COMM_WORLD;  
@@ -60,6 +59,18 @@ for (i=0; i<k; i++) {
 // PetscPrintf(comm, "%.2g  ",a[i]);
 // PetscPrintf(comm, "\n");
 // }
+
+//Create Matrix
+// MatCreate(comm,Mat* A) //if A is not defined beofre but you would like to defined here.
+MatCreate(comm,&A) // Mat A is predefined before,
+
+
+
+// Moore-Penrose comdition W = V^{+}
+// V V^{+} V = V
+// V^{+} = (V* V)^{-1} V*       where V* is transpose of V
+
+
 
 
 // Destroy duplicate vectors

@@ -6,7 +6,7 @@ static char help[] = "\n\n This code take k vectors of size N and check their or
 
 int main(int argc,char **args)
 {
-PetscInt k=64,n=100000;
+PetscInt k=3,n=3;
 PetscInt i,j; // number of vectors
 PetscBool flg;
 PetscRandom rann;
@@ -23,6 +23,7 @@ PetscCall( PetscOptionsGetInt(PETSC_NULL,PETSC_NULL,"-n",&n,&flg) );
 PetscCall( PetscRandomCreate(PETSC_COMM_WORLD,&rann) );
 PetscCall( PetscRandomSetFromOptions(rann)  );
 
+
 PetscCall( VecCreate(PETSC_COMM_WORLD,&y[0]) );
 PetscCall( VecSetSizes(y[0],PETSC_DETERMINE,n) );
 PetscCall( VecSetFromOptions(y[0])  );
@@ -36,6 +37,8 @@ for (i = 0; i < k; ++i) {
 PetscCall( VecSetRandom(y[i], rann) );
 }
 PetscCall( PetscRandomDestroy(&rann) );
+
+PetscCall(VecView(y[0],PETSC_VIEWER_STDOUT_WORLD));  //----------Print----------------
 
 // ------------------log ---------------------
 PetscCall( PetscLogEventRegister("Gram_Schmidt_orthogonalization",0,&evnt) ); // log evnt
