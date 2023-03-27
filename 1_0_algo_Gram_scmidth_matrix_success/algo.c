@@ -47,7 +47,9 @@ PetscCall(MatSetFromOptions(A));
 PetscCall(MatSetUp(A));
 PetscCall(MatSetRandom(A,rann));
 MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY);  
-MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY);  
+MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY); 
+
+PetscCall(PetscPrintf(comm,"\nRandom generated Matrix is:\n"));
 MatView(A,PETSC_VIEWER_STDOUT_WORLD);
 
 
@@ -89,6 +91,7 @@ for (i=0; i<n; i++)
     MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY);  
     MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY); 
 
+PetscCall(PetscPrintf(comm,"\nNormalized Random Matrix:\n"));
 MatView(A,PETSC_VIEWER_STDOUT_WORLD); //--------------------------Print MAT-------------------
 
 //Orthogonality Check
