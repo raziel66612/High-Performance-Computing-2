@@ -11,7 +11,7 @@ PetscInt k=4,n=4;
 PetscInt i,j; // number of vectors
 PetscBool flg;
 PetscRandom rann;
-PetscScalar dot_prod,normVi,normVj,normVsqi,normVsqj,temp;
+PetscScalar dot_prod,normVi,normVj,temp;
 Vec a[k],ahat[k];
 PetscLogEvent evnt;
 
@@ -48,26 +48,26 @@ PetscCall( PetscRandomDestroy(&rann) );
 PetscCall( PetscLogEventRegister("Gram_Schmidt_orthogonalization",0,&evnt) ); // log evnt
 PetscCall( PetscLogEventBegin(evnt,0,0,0,0) );
 //--------------------- orthogonalize the vectors ----------------------
-for (i=0; i<k; i++) {
-    PetscCall( VecNorm(a[i],NORM_2,&normVi) );   
-    normVsqi = PetscSqr(normVi);
-    // PetscPrintf(PETSC_COMM_WORLD,"\n In iteration i = %d, ahat before AXPY \n",i);  PetscCall(VecView(ahat[i],PETSC_VIEWER_STDOUT_WORLD));  //----------Print----------------
-    PetscCall( VecAXPY(ahat[i],1.0/normVi,a[i]) ); // y= alpha*x+y ,, and here ahat=y, which was initially assigned as 0.
-    // PetscPrintf(PETSC_COMM_WORLD,"\n In iteration i = %d, ahat after AXPY \n",i);  PetscCall(VecView(ahat[i],PETSC_VIEWER_STDOUT_WORLD));  //----------Print----------------
+for (i=0; i<k; i++) {   
 
     for (j=0; j<i; j++) {
         PetscCall( VecNorm(a[j],NORM_2,&normVj) );
         PetscCall( VecScale(a[j],1.0/normVj) );  // basis of a[j]
   
         PetscCall( VecDot(a[i],a[j],&dot_prod) );
-        normVsqj = PetscSqr(normVj);
-        temp=dot_prod*normVsqj;
+        temp=dot_prod*normVj;
         PetscCall( VecAXPY(ahat[i],-temp,a[j]));
     }
-
-PetscCall(VecScale(ahat[i],1.0/normVsqi));
+PetscCall( VecNorm(a[i],NORM_2,&normVi) );
+PetscCall( VecAXPY(ahat[i],1.0/normVi,a[i])); // y= alpha*x+y ,, and here ahat=y, which was initially assigned as 0.
+PetscCall(VecScale(ahat[i],1.0/normVi));
 // PetscPrintf(PETSC_COMM_WORLD," ahat at end of iteration i = %d \n",i); PetscCall(VecView(ahat[i],PETSC_VIEWER_STDOUT_WORLD));
 }
+//print vector ahat
+for(i=0; i<k;i++){
+PetscPrintf(PETSC_COMM_WORLD," n = %d ; ahat is: \n",i);
+ PetscCall(VecView(ahat[i],PETSC_VIEWER_STDOUT_WORLD));}
+
 
 // for(i=k-2; i>0 ; i--){
 //     for(j=k-1; j>i+1; j--){
