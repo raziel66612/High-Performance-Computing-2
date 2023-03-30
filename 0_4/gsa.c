@@ -2,7 +2,7 @@
 #include "petsc.h"
 #include <petscmath.h>
 
-static char help[] = "\n\n This code take k vectors of size N and check their orthogonalita ba gram schmidt algorithm \n\n";
+static char help[] = "\n\n This code take k vectors of size N and check their orthogonalita by a new algorithm, by creating dual basis, and algorithm is of 2N^{2} order.  \n\n";
 
 
 int main(int argc,char **args)
@@ -38,8 +38,6 @@ PetscCall( VecDuplicate(a[0], &ahat[i])  );
 
 for (i = 0; i < k; i++) {
 PetscCall( VecSetRandom(a[i], rann) );
-// PetscCall(VecView(a[i],PETSC_VIEWER_STDOUT_WORLD));  //----------Print----------------
-// PetscCall(VecView(ahat[i],PETSC_VIEWER_STDOUT_WORLD));  //----------Print----------------
 }
 PetscCall( PetscRandomDestroy(&rann) );
 
@@ -47,47 +45,39 @@ PetscCall( PetscRandomDestroy(&rann) );
 PetscCall( PetscLogEventRegister("Gram_Schmidt_orthogonalization",0,&evnt) ); // log evnt
 PetscCall( PetscLogEventBegin(evnt,0,0,0,0) );
 //--------------------- orthogonalize the vectors ----------------------
-
+// alternate way to code than professors
 for (i=0; i<k; i++) {
-    VecCopy(a[i],ahat[i]);
+VecCopy(a[i],ahat[i]);
     for (j=0; j<i; j++) {
         PetscCall( VecNorm(ahat[j],NORM_2,&normVj) );
-        // PetscCall( VecScale(ahat[j],1.0/normVj) );  // basis of a[j]
-
         PetscCall( VecDot(a[i],ahat[j],&dot_prod) );
-        temp=dot_prod*normVj*normVj;
+        temp=dot_prod/normVj/normVj;
         PetscCall( VecAXPY(ahat[i],-temp,ahat[j]));
     }
-
+    
 PetscCall(VecNorm(ahat[i],NORM_2,&normVi) );
 PetscCall(VecScale(ahat[i],1.0/(normVi*normVi)));
-
 // PetscPrintf(PETSC_COMM_WORLD," ahat at end of iteration i = %d \n",i); PetscCall(VecView(ahat[i],PETSC_VIEWER_STDOUT_WORLD));
 }
 
-//print vector ahat
-// for(i=0; i<k;i++){
-// PetscPrintf(PETSC_COMM_WORLD," n = %d ; ahat is: \n",i);
-// PetscCall(VecView(ahat[i],PETSC_VIEWER_STDOUT_WORLD));}
+for(i=k-1; i>=0 ; i--){
+    for(j=k-1; j>i; j--){
+        VecDot(ahat[i],a[j],&dot_prod);
+        PetscCall( VecNorm(a[j],NORM_2,&normVj) );
+        VecAXPY(ahat[i],-dot_prod,ahat[j]);
+    }
+}
 
-// for(i=k-2; i>0 ; i--){
-//     for(j=k-1; j>i+1; j--){
-//         VecDot(ahat[i],a[j],&dot_prod);
-//         PetscCall( VecNorm(a[j],NORM_2,&normVj) );
-//         PetscCall( VecScale(a[j],1.0/normVj) );  // basis of a[j]
-//         VecAXPY(ahat[i],-dot_prod,ahat[j]);
-//     }
-// }
-
-PetscCall( PetscLogEventEnd(evnt,0,0,0,0) );
+PetscCall( PetscLogEventEnd(evnt,0,0,0,0));
 
 //-------print dot product of vect on terminal to verifa orthogonalita ----------------
 for (i=0; i<k; i++) {
     for (j=0; j<k; j++) {
         PetscScalar dot;
         PetscCall( VecDot(a[i],ahat[j],&dot) );
+
         if(PetscAbsScalar(dot)< 0.00001) dot=0.0;
-        PetscCall( PetscPrintf(PETSC_COMM_WORLD,"%.1g  ",dot) );
+        PetscCall( PetscPrintf(PETSC_COMM_WORLD,"%.2g  ",dot) );
         }
     PetscCall( PetscPrintf(PETSC_COMM_WORLD, "\n") );
 }
