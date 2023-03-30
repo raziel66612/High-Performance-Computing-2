@@ -47,43 +47,28 @@ PetscCall( PetscRandomDestroy(&rann) );
 PetscCall( PetscLogEventRegister("Gram_Schmidt_orthogonalization",0,&evnt) ); // log evnt
 PetscCall( PetscLogEventBegin(evnt,0,0,0,0) );
 //--------------------- orthogonalize the vectors ----------------------
-// for (i=0; i<k;i++)
-// {
-// PetscCall( VecNorm(a[i],NORM_2,&normVi) );
-// PetscCall( VecAXPY(ahat[i],1.0/normVi,a[i])); // y= alpha*x+y ,, and here ahat=y, which was initially assigned as 0.
-// }
-
-for (i=0; i<k;i++)
-{
-VecCopy(a[i],ahat[i]);
-// PetscCall( VecNorm(ahat[i],NORM_2,&normVi) );
-// PetscCall( VecScale(ahat[i],1.0/normVi) );  // basis of a[j]
-}
 
 for (i=0; i<k; i++) {
+    VecCopy(a[i],ahat[i]);
     for (j=0; j<i; j++) {
         PetscCall( VecNorm(ahat[j],NORM_2,&normVj) );
         // PetscCall( VecScale(ahat[j],1.0/normVj) );  // basis of a[j]
 
         PetscCall( VecDot(a[i],ahat[j],&dot_prod) );
-        temp=dot_prod*normVj;
+        temp=dot_prod*normVj*normVj;
         PetscCall( VecAXPY(ahat[i],-temp,ahat[j]));
     }
 
 PetscCall(VecNorm(ahat[i],NORM_2,&normVi) );
-PetscCall(VecScale(ahat[i],1.0/normVi));
-// PetscCall(VecScale(ahat[i],1.0/normVi));
+PetscCall(VecScale(ahat[i],1.0/(normVi*normVi)));
+
 // PetscPrintf(PETSC_COMM_WORLD," ahat at end of iteration i = %d \n",i); PetscCall(VecView(ahat[i],PETSC_VIEWER_STDOUT_WORLD));
 }
 
-// PetscCall(VecScale(ahat[i],1.0/normVi));
-// // PetscPrintf(PETSC_COMM_WORLD," ahat at end of iteration i = %d \n",i); PetscCall(VecView(ahat[i],PETSC_VIEWER_STDOUT_WORLD));
-// }
-
 //print vector ahat
-for(i=0; i<k;i++){
-PetscPrintf(PETSC_COMM_WORLD," n = %d ; ahat is: \n",i);
-PetscCall(VecView(ahat[i],PETSC_VIEWER_STDOUT_WORLD));}
+// for(i=0; i<k;i++){
+// PetscPrintf(PETSC_COMM_WORLD," n = %d ; ahat is: \n",i);
+// PetscCall(VecView(ahat[i],PETSC_VIEWER_STDOUT_WORLD));}
 
 // for(i=k-2; i>0 ; i--){
 //     for(j=k-1; j>i+1; j--){
