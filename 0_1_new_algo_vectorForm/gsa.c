@@ -42,10 +42,10 @@ PetscCall( VecSetRandom(a[i], rann) );
 PetscCall( PetscRandomDestroy(&rann) );
 
 // ------------------log ---------------------
-PetscCall( PetscLogEventRegister("Gram_Schmidt_orthogonalization",0,&evnt) ); // log evnt
+PetscCall( PetscLogEventRegister("New_algo_orthogonalization",0,&evnt) ); // log evnt
 PetscCall( PetscLogEventBegin(evnt,0,0,0,0) );
 //--------------------- orthogonalize the vectors ----------------------
-// alternate way to code than professors
+// alternate way 
 for (i=0; i<k; i++) {
 VecCopy(a[i],ahat[i]);
     for (j=0; j<i; j++) {
