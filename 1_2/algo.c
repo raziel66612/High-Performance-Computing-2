@@ -36,7 +36,6 @@ PetscCall(VecDuplicate(a,&b));
 PetscCall(VecDuplicate(a,&c));
 PetscCall(VecDuplicate(a,&d));
 
-
 //Matrix 
 PetscCall(MatCreate(comm,&A));
 PetscCall(MatSetSizes(A,m,n,PETSC_DETERMINE,PETSC_DETERMINE));
