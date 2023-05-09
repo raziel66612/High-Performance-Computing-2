@@ -1,6 +1,6 @@
 #include "petsc.h"
 #include <stdio.h>
-static char help[] = " in process ";
+static char help[] = "This code takes creates A matrix of mxn order and creates a Q matrix which is orthogonal to matrix A ";
 
 int main(int argc,char **args)
 {
